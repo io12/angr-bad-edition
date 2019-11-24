@@ -1,6 +1,6 @@
 # angr: bad edition
 
-A mediocre angr clone
+A mediocre [angr](http://angr.io/) clone
 
 ![logo](https://i.imgur.com/KkmCb1f.png)
 
