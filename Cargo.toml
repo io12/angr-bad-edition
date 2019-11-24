@@ -5,3 +5,4 @@ authors = ["Benjamin Levy <blevy@protonmail.com>"]
 edition = "2018"
 
 [dependencies]
+llvm-ir = "0.3.1"
