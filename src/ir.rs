@@ -1,14 +1,11 @@
 use std::rc::Rc;
 
 /// A block of statements in the IR
-#[derive(Debug)]
-pub struct Block {
-    /// Statements in block
-    pub stmts: Vec<Stmt>,
-}
+#[derive(Debug, Clone)]
+pub struct Block(pub Vec<Stmt>);
 
 /// A statement in the IR
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Stmt {
     /// Assignment
     Set {
@@ -21,18 +18,18 @@ pub enum Stmt {
 }
 
 /// Destination of set statement
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum SetDst {
-    /// Register assignment
-    Reg {
-        // TODO: make this less dynamic
-        /// Name of register
-        name: String,
-    },
+    /// Register assignment (contains register name)
+    // TODO: make this less dynamic
+    Reg(String),
+
+    /// Assignment to memory address
+    Mem(Expr),
 }
 
 /// An expression in the IR
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expr {
     /// A binary operation
     BinOp {
@@ -47,21 +44,16 @@ pub enum Expr {
     },
 
     /// A constant value
-    Const {
-        /// Value of expression
-        val: i64,
-    },
+    Const(i64),
 
-    /// A register value
-    Reg {
-        // TODO: make this less dynamic
-        /// Name of register
-        name: String,
-    },
+    /// A register value (contains register name)
+    // TODO: make this less dynamic
+    Reg(String),
 }
 
 /// A kind of binary operation
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum BinOpKind {
+    Add,
     Xor,
 }

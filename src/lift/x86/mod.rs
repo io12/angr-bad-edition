@@ -24,17 +24,18 @@ pub fn ins_operands<'a>(ins: &'a Insn, cs: &Capstone) -> Vec<X86Operand> {
 }
 
 /// Lift instruction to IR
-pub fn lift_ins(ins: &Insn, cs: &Capstone) -> ir::Stmt {
+pub fn lift_ins(ins: &Insn, cs: &Capstone) -> ir::Block {
     let operands = ins_operands(ins, cs);
 
     match opcode(ins) {
         X86Insn::X86_INS_XOR => ins::lift_xor(&operands, cs),
+        X86Insn::X86_INS_PUSH => ins::lift_push(&operands, cs),
         ins => panic!("instruction {:?} is unimplemented", ins),
     }
 }
 
 /// Lift bytes to IR
-pub fn lift_bytes(bytes: &[u8], addr: u64) -> ir::Stmt {
+pub fn lift_bytes(bytes: &[u8], addr: u64) -> ir::Block {
     let cs = Capstone::new()
         .x86()
         .mode(arch::x86::ArchMode::Mode32)
@@ -43,9 +44,12 @@ pub fn lift_bytes(bytes: &[u8], addr: u64) -> ir::Stmt {
         .build()
         .expect("Failed to create Capstone object");
     let insns = cs.disasm_all(bytes, addr).expect("failed to disassemble");
-    for ins in insns.iter() {
-        return lift_ins(&ins, &cs);
+    let mut ret = ir::Block(vec![]);
+    for (i, block) in insns.iter().map(|ins| lift_ins(&ins, &cs)).enumerate() {
+        ret.0.append(&mut block.0.clone());
+        if i == 2 {
+            break;
+        }
     }
-
-    unimplemented!()
+    ret
 }
