@@ -1,3 +1,4 @@
+pub mod ir;
 pub mod lift;
 
 /// Solve for an assertion failure
