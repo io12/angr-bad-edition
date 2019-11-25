@@ -67,3 +67,16 @@ pub fn lift_push(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
         panic!("invalid amount of operands")
     }
 }
+
+pub fn lift_mov(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
+    if let [dst, src] = operands {
+        let dst = &dst.op_type;
+        let src = &src.op_type;
+        ir::Block(vec![ir::Stmt::Set {
+            dst: lift_set_dst(dst, cs),
+            val: lift_read_operand(src, cs),
+        }])
+    } else {
+        panic!("invalid amount of operands")
+    }
+}

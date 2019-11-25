@@ -30,6 +30,7 @@ pub fn lift_ins(ins: &Insn, cs: &Capstone) -> ir::Block {
     match opcode(ins) {
         X86Insn::X86_INS_XOR => ins::lift_xor(&operands, cs),
         X86Insn::X86_INS_PUSH => ins::lift_push(&operands, cs),
+        X86Insn::X86_INS_MOV => ins::lift_mov(&operands, cs),
         ins => panic!("instruction {:?} is unimplemented", ins),
     }
 }
@@ -47,7 +48,7 @@ pub fn lift_bytes(bytes: &[u8], addr: u64) -> ir::Block {
     let mut ret = ir::Block(vec![]);
     for (i, block) in insns.iter().map(|ins| lift_ins(&ins, &cs)).enumerate() {
         ret.0.append(&mut block.0.clone());
-        if i == 2 {
+        if i == 8 {
             break;
         }
     }
