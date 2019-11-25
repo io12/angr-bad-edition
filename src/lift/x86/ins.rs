@@ -51,7 +51,7 @@ pub fn lift_push(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
         let operand = &operand.op_type;
         ir::Block(vec![
             ir::Stmt::Set {
-                dst: ir::SetDst::Reg(ir::Reg("expr".into())),
+                dst: ir::SetDst::Reg(ir::Reg("esp".into())),
                 val: ir::Expr::BinOp {
                     kind: ir::BinOpKind::Add,
                     left: Rc::new(ir::Expr::Reg(ir::Reg("esp".into()))),
