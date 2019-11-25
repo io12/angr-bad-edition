@@ -2,6 +2,17 @@ use std::fmt;
 use std::fmt::Display;
 use std::rc::Rc;
 
+/// A register (contains register name)
+// TODO: make this less dynamic
+#[derive(Debug, Clone)]
+pub struct Reg(pub String);
+
+impl Display for Reg {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "regs.{}", self.0)
+    }
+}
+
 /// A block of statements in the IR
 #[derive(Debug, Clone)]
 pub struct Block(pub Vec<Stmt>);
@@ -39,9 +50,8 @@ impl Display for Stmt {
 /// Destination of set statement
 #[derive(Debug, Clone)]
 pub enum SetDst {
-    /// Register assignment (contains register name)
-    // TODO: make this less dynamic
-    Reg(String),
+    /// Register assignment
+    Reg(Reg),
 
     /// Assignment to memory address
     Mem(Expr),
@@ -50,7 +60,7 @@ pub enum SetDst {
 impl Display for SetDst {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            SetDst::Reg(name) => write!(f, "regs[{}]", name),
+            SetDst::Reg(reg) => write!(f, "{}", reg),
             SetDst::Mem(addr) => write!(f, "mem[{}]", addr),
         }
     }
@@ -74,9 +84,8 @@ pub enum Expr {
     /// A constant value
     Const(i64),
 
-    /// A register value (contains register name)
-    // TODO: make this less dynamic
-    Reg(String),
+    /// A register value
+    Reg(Reg),
 }
 
 impl Display for Expr {
@@ -84,7 +93,7 @@ impl Display for Expr {
         match self {
             Expr::BinOp { kind, left, right } => write!(f, "({} {} {})", left, kind, right),
             Expr::Const(val) => write!(f, "{:#x}", val),
-            Expr::Reg(name) => write!(f, "regs[{}]", name),
+            Expr::Reg(reg) => write!(f, "{}", reg),
         }
     }
 }

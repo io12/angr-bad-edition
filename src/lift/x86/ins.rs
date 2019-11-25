@@ -12,7 +12,7 @@ fn lift_set_dst(dst: &X86OperandType, cs: &Capstone) -> ir::SetDst {
     match dst {
         X86OperandType::Reg(reg_id) => {
             let name = cs.reg_name(*reg_id).expect("invalid register id");
-            ir::SetDst::Reg(name)
+            ir::SetDst::Reg(ir::Reg(name))
         }
         _ => unimplemented!(),
     }
@@ -22,7 +22,7 @@ fn lift_read_operand(operand: &X86OperandType, cs: &Capstone) -> ir::Expr {
     match operand {
         X86OperandType::Reg(reg_id) => {
             let name = cs.reg_name(*reg_id).expect("invalid register id");
-            ir::Expr::Reg(name)
+            ir::Expr::Reg(ir::Reg(name))
         }
         X86OperandType::Imm(val) => ir::Expr::Const(*val),
         _ => unimplemented!(),
@@ -51,15 +51,15 @@ pub fn lift_push(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
         let operand = &operand.op_type;
         ir::Block(vec![
             ir::Stmt::Set {
-                dst: ir::SetDst::Reg("expr".into()),
+                dst: ir::SetDst::Reg(ir::Reg("expr".into())),
                 val: ir::Expr::BinOp {
                     kind: ir::BinOpKind::Add,
-                    left: Rc::new(ir::Expr::Reg("esp".into())),
+                    left: Rc::new(ir::Expr::Reg(ir::Reg("esp".into()))),
                     right: Rc::new(ir::Expr::Const(WORD_SIZE)),
                 },
             },
             ir::Stmt::Set {
-                dst: ir::SetDst::Mem(ir::Expr::Reg("esp".into())),
+                dst: ir::SetDst::Mem(ir::Expr::Reg(ir::Reg("esp".into()))),
                 val: lift_read_operand(operand, cs),
             },
         ])
