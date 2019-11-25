@@ -3,5 +3,5 @@ static SHELLCODE: &[u8] =
 
 fn main() {
     let expr = angr_bad::lift::x86::lift_bytes(SHELLCODE, 0);
-    println!("{:#?}", expr);
+    println!("{}", expr);
 }
