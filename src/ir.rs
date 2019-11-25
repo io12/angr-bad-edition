@@ -2,6 +2,8 @@ use std::fmt;
 use std::fmt::Display;
 use std::rc::Rc;
 
+use capstone::prelude::*;
+
 /// A register (contains register name)
 // TODO: make this less dynamic
 #[derive(Debug, Clone)]
@@ -37,12 +39,31 @@ pub enum Stmt {
         /// Value to assign
         val: Expr,
     },
+
+    /// Untranslated machine code bytes
+    Asm(Vec<u8>),
 }
 
 impl Display for Stmt {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Stmt::Set { dst, val } => write!(f, "{} = {};", dst, val),
+            Stmt::Asm(bytes) => {
+                let cs = Capstone::new()
+                    .x86()
+                    .mode(arch::x86::ArchMode::Mode32)
+                    .syntax(arch::x86::ArchSyntax::Intel)
+                    .build()
+                    .expect("failed to create capstone object");
+                let insns = cs.disasm_all(bytes, 0).expect("failed disassembling");
+
+                f.write_str("asm {\n")?;
+                for ins in insns.iter() {
+                    write!(f, "\t{}\n", ins)?;
+                }
+                f.write_str("}")?;
+                Ok(())
+            }
         }
     }
 }

@@ -31,7 +31,7 @@ pub fn lift_ins(ins: &Insn, cs: &Capstone) -> ir::Block {
         X86Insn::X86_INS_XOR => ins::lift_xor(&operands, cs),
         X86Insn::X86_INS_PUSH => ins::lift_push(&operands, cs),
         X86Insn::X86_INS_MOV => ins::lift_mov(&operands, cs),
-        ins => panic!("instruction {:?} is unimplemented", ins),
+        _ => ir::Block(vec![ir::Stmt::Asm(ins.bytes().to_vec())]),
     }
 }
 
@@ -46,11 +46,8 @@ pub fn lift_bytes(bytes: &[u8], addr: u64) -> ir::Block {
         .expect("Failed to create Capstone object");
     let insns = cs.disasm_all(bytes, addr).expect("failed to disassemble");
     let mut ret = ir::Block(vec![]);
-    for (i, block) in insns.iter().map(|ins| lift_ins(&ins, &cs)).enumerate() {
+    for block in insns.iter().map(|ins| lift_ins(&ins, &cs)) {
         ret.0.append(&mut block.0.clone());
-        if i == 8 {
-            break;
-        }
     }
     ret
 }
