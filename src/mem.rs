@@ -1,8 +1,10 @@
 use crate::ir;
 
 use std::collections::HashMap;
+use std::fs;
 use std::iter;
 use std::ops::Range;
+use std::path::Path;
 
 use goblin::elf::program_header::ProgramHeader as ElfProgramHeader;
 use goblin::elf::program_header::PT_LOAD;
@@ -16,6 +18,12 @@ pub struct Mem {
 }
 
 impl Mem {
+    pub fn load_elf_path<P: AsRef<Path>>(&mut self, path: P) {
+        let bytes = fs::read(path).expect("failed reading elf");
+        let elf = Elf::parse(&bytes).expect("error parsing elf");
+        self.load_elf(&bytes, &elf)
+    }
+
     pub fn load_elf(&mut self, elf_bytes: &[u8], elf: &Elf) {
         elf.program_headers
             .iter()
