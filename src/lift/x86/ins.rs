@@ -196,3 +196,7 @@ pub fn lift_lea(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
         panic!("invalid amount of operands")
     }
 }
+
+pub fn lift_nop() -> ir::Block {
+    ir::Block(vec![ir::Stmt::Nop])
+}

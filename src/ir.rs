@@ -46,6 +46,9 @@ pub enum Stmt {
 
     /// Untranslated machine code bytes
     Asm(Vec<u8>),
+
+    /// No-op
+    Nop,
 }
 
 impl Display for Stmt {
@@ -68,6 +71,7 @@ impl Display for Stmt {
                 f.write_str("}")?;
                 Ok(())
             }
+            Stmt::Nop => write!(f, "nop;"),
         }
     }
 }
