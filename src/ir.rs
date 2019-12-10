@@ -4,7 +4,9 @@ use std::fmt::Display;
 use std::rc::Rc;
 
 use capstone::prelude::*;
+use petgraph::graph;
 use petgraph::graph::Graph;
+use petgraph::visit::Dfs;
 
 /// A register (contains register name)
 // TODO: make this less dynamic
@@ -155,6 +157,23 @@ impl Function {
     }
 }
 
+impl Display for Function {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let cfg = &self.cfg;
+        let mut dfs = Dfs::new(cfg, graph::NodeIndex::new(0));
+        while let Some(index) = dfs.next(cfg) {
+            write!(
+                f,
+                "{}:\n{}",
+                index.index(),
+                cfg.node_weight(index)
+                    .expect("failed getting CFG basic block")
+            )?;
+        }
+        Ok(())
+    }
+}
+
 /// An IR program
 #[derive(Debug)]
 pub struct Program {
@@ -168,5 +187,14 @@ impl Program {
         Program {
             funcs: BTreeMap::new(),
         }
+    }
+}
+
+impl Display for Program {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        for (name, func) in &self.funcs {
+            write!(f, "fn {}():\n{}", name, func)?;
+        }
+        Ok(())
     }
 }
