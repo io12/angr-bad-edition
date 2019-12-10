@@ -3,6 +3,7 @@ use std::fmt::Display;
 use std::rc::Rc;
 
 use capstone::prelude::*;
+use petgraph::graph::Graph;
 
 /// A register (contains register name)
 // TODO: make this less dynamic
@@ -132,5 +133,19 @@ impl Display for BinOpKind {
             BinOpKind::Add => f.write_str("+"),
             BinOpKind::Xor => f.write_str("^"),
         }
+    }
+}
+
+/// A lifted function
+#[derive(Debug)]
+pub struct Function {
+    /// Control flow graph
+    pub cfg: Graph<Block, ()>,
+}
+
+impl Function {
+    /// Make a new empty function
+    pub fn new() -> Function {
+        Function { cfg: Graph::new() }
     }
 }

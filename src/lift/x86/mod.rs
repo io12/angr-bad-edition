@@ -35,8 +35,8 @@ pub fn lift_ins(ins: &Insn, cs: &Capstone) -> ir::Block {
     }
 }
 
-/// Lift bytes to IR
-pub fn lift_bytes(bytes: &[u8], addr: u64) -> ir::Block {
+/// Lift bytes to IR function
+pub fn lift_bytes(bytes: &[u8], addr: u64) -> ir::Function {
     let cs = Capstone::new()
         .x86()
         .mode(arch::x86::ArchMode::Mode32)
@@ -45,9 +45,11 @@ pub fn lift_bytes(bytes: &[u8], addr: u64) -> ir::Block {
         .build()
         .expect("Failed to create Capstone object");
     let insns = cs.disasm_all(bytes, addr).expect("failed to disassemble");
-    let mut ret = ir::Block(vec![]);
-    for block in insns.iter().map(|ins| lift_ins(&ins, &cs)) {
-        ret.0.append(&mut block.0.clone());
+    let mut block = ir::Block(vec![]);
+    for block_app in insns.iter().map(|ins| lift_ins(&ins, &cs)) {
+        block.0.append(&mut block_app.0.clone());
     }
-    ret
+    let mut func = ir::Function::new();
+    func.cfg.add_node(block);
+    func
 }

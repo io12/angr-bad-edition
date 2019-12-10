@@ -3,7 +3,7 @@ static SHELLCODE: &[u8] =
 
 fn main() {
     let expr = angr_bad::lift::x86::lift_bytes(SHELLCODE, 0);
-    println!("{}", expr);
+    println!("{:#?}", expr);
 
     let mem = {
         let mut mem = angr_bad::mem::Mem::default();

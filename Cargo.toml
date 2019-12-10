@@ -7,3 +7,4 @@ edition = "2018"
 [dependencies]
 capstone = "0.6.0"
 goblin = "0.1.1"
+petgraph = "0.4.13"
