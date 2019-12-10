@@ -25,6 +25,12 @@ fn lift_read_operand(operand: &X86OperandType, cs: &Capstone) -> ir::Expr {
             ir::Expr::Reg(ir::Reg(name))
         }
         X86OperandType::Imm(val) => ir::Expr::Const(*val),
+        X86OperandType::Mem(mem) => {
+            let addr = mem.disp();
+            let addr = ir::Expr::Const(addr);
+            let addr = Rc::new(addr);
+            ir::Expr::Mem(addr)
+        }
         _ => unimplemented!("{:#?}", operand),
     }
 }

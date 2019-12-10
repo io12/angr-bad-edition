@@ -109,6 +109,9 @@ pub enum Expr {
 
     /// A register value
     Reg(Reg),
+
+    /// A memory read
+    Mem(Rc<Expr>),
 }
 
 impl Display for Expr {
@@ -117,6 +120,7 @@ impl Display for Expr {
             Expr::BinOp { kind, left, right } => write!(f, "({} {} {})", left, kind, right),
             Expr::Const(val) => write!(f, "{:#x}", val),
             Expr::Reg(reg) => write!(f, "{}", reg),
+            Expr::Mem(addr) => write!(f, "mem[{}]", addr),
         }
     }
 }
