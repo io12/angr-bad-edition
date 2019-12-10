@@ -2,6 +2,9 @@ mod ins;
 
 use crate::ir;
 
+use std::fs;
+use std::path::Path;
+
 use capstone::arch::x86::X86Insn;
 use capstone::arch::x86::X86Operand;
 use capstone::prelude::*;
@@ -85,4 +88,12 @@ pub fn lift_elf(elf: &Elf, bytes: &[u8]) -> ir::Program {
     ir::Program {
         funcs: btreemap! { "_start".to_string() => lift_elf_func(elf, bytes, elf.entry) },
     }
+}
+
+/// Lift ELF to IR program from path
+pub fn lift_elf_path<P: AsRef<Path>>(path: P) -> ir::Program {
+    let path = path.as_ref();
+    let bytes = fs::read(path).expect("failed reading elf");
+    let elf = Elf::parse(&bytes).expect("failed parsing elf");
+    lift_elf(&elf, &bytes)
 }
