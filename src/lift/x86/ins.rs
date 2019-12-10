@@ -64,7 +64,7 @@ pub fn lift_push(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
             ir::Stmt::Set {
                 dst: ir::SetDst::Reg(ir::Reg("esp".into())),
                 val: ir::Expr::BinOp {
-                    kind: ir::BinOpKind::Add,
+                    kind: ir::BinOpKind::Sub,
                     left: Rc::new(ir::Expr::Reg(ir::Reg("esp".into()))),
                     right: Rc::new(ir::Expr::Const(WORD_SIZE)),
                 },
@@ -72,6 +72,34 @@ pub fn lift_push(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
             ir::Stmt::Set {
                 dst: ir::SetDst::Mem(ir::Expr::Reg(ir::Reg("esp".into()))),
                 val: lift_read_operand(operand, cs),
+            },
+        ])
+    } else {
+        panic!("invalid amount of operands")
+    }
+}
+
+pub fn lift_pop(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
+    if let [operand] = operands {
+        let operand = &operand.op_type;
+        ir::Block(vec![
+            ir::Stmt::Set {
+                dst: lift_set_dst(operand, cs),
+                val: {
+                    let esp = "esp".into();
+                    let esp = ir::Reg(esp);
+                    let esp = ir::Expr::Reg(esp);
+                    let esp = Rc::new(esp);
+                    ir::Expr::Mem(esp)
+                },
+            },
+            ir::Stmt::Set {
+                dst: ir::SetDst::Reg(ir::Reg("esp".into())),
+                val: ir::Expr::BinOp {
+                    kind: ir::BinOpKind::Add,
+                    left: Rc::new(ir::Expr::Reg(ir::Reg("esp".into()))),
+                    right: Rc::new(ir::Expr::Const(WORD_SIZE)),
+                },
             },
         ])
     } else {

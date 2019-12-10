@@ -131,6 +131,7 @@ impl Display for Expr {
 #[derive(Debug, Clone)]
 pub enum BinOpKind {
     Add,
+    Sub,
     Xor,
 }
 
@@ -138,6 +139,7 @@ impl Display for BinOpKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             BinOpKind::Add => f.write_str("+"),
+            BinOpKind::Sub => f.write_str("-"),
             BinOpKind::Xor => f.write_str("^"),
         }
     }

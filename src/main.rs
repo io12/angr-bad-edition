@@ -1,5 +1,5 @@
 fn main() {
-    let path = "/bin/true";
+    let path = "/tmp/a.out";
 
     let prog = angr_bad::lift::x86::lift_elf_path(path);
     println!("{}", prog);
