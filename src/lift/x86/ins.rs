@@ -14,6 +14,11 @@ fn lift_set_dst(dst: &X86OperandType, cs: &Capstone) -> ir::SetDst {
             let name = cs.reg_name(*reg_id).expect("invalid register id");
             ir::SetDst::Reg(ir::Reg(name))
         }
+        X86OperandType::Mem(mem) => {
+            let addr = mem.disp();
+            let addr = ir::Expr::Const(addr);
+            ir::SetDst::Mem(addr)
+        }
         _ => unimplemented!("{:#?}", dst),
     }
 }
