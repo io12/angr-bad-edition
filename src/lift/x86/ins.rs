@@ -14,7 +14,7 @@ fn lift_set_dst(dst: &X86OperandType, cs: &Capstone) -> ir::SetDst {
             let name = cs.reg_name(*reg_id).expect("invalid register id");
             ir::SetDst::Reg(ir::Reg(name))
         }
-        _ => unimplemented!(),
+        _ => unimplemented!("{:#?}", dst),
     }
 }
 
@@ -25,7 +25,7 @@ fn lift_read_operand(operand: &X86OperandType, cs: &Capstone) -> ir::Expr {
             ir::Expr::Reg(ir::Reg(name))
         }
         X86OperandType::Imm(val) => ir::Expr::Const(*val),
-        _ => unimplemented!(),
+        _ => unimplemented!("{:#?}", operand),
     }
 }
 
