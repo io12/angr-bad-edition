@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::fmt;
 use std::fmt::Display;
 use std::rc::Rc;
@@ -147,5 +148,21 @@ impl Function {
     /// Make a new empty function
     pub fn new() -> Function {
         Function { cfg: Graph::new() }
+    }
+}
+
+/// An IR program
+#[derive(Debug)]
+pub struct Program {
+    /// Map from function names to functions
+    pub funcs: BTreeMap<String, Function>,
+}
+
+impl Program {
+    /// Make a new empty program
+    pub fn new() -> Program {
+        Program {
+            funcs: BTreeMap::new(),
+        }
     }
 }
