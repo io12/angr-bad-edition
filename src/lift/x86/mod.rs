@@ -38,6 +38,7 @@ pub fn lift_ins(ins: &Insn, cs: &Capstone) -> ir::Block {
         X86Insn::X86_INS_MOV => ins::lift_mov(&operands, cs),
         X86Insn::X86_INS_AND => ins::lift_and(&operands, cs),
         X86Insn::X86_INS_ADD => ins::lift_add(&operands, cs),
+        X86Insn::X86_INS_LEA => ins::lift_lea(&operands, cs),
         _ => ir::Block(vec![ir::Stmt::Asm(ins.bytes().to_vec())]),
     }
 }

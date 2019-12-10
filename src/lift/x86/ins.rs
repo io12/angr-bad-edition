@@ -31,10 +31,23 @@ fn lift_read_operand(operand: &X86OperandType, cs: &Capstone) -> ir::Expr {
         }
         X86OperandType::Imm(val) => ir::Expr::Const(*val),
         X86OperandType::Mem(mem) => {
-            let addr = mem.disp();
-            let addr = ir::Expr::Const(addr);
-            let addr = Rc::new(addr);
-            ir::Expr::Mem(addr)
+            let disp = mem.disp();
+            let base_reg = Rc::new(ir::Expr::Reg(ir::Reg(
+                cs.reg_name(mem.base()).expect("invalid base register"),
+            )));
+            let op = if disp < 0 {
+                ir::BinOpKind::Sub
+            } else {
+                ir::BinOpKind::Add
+            };
+            let disp = disp.abs();
+            let disp = Rc::new(ir::Expr::Const(disp));
+            let addr = ir::Expr::BinOp {
+                kind: op,
+                left: base_reg,
+                right: disp,
+            };
+            ir::Expr::Mem(Rc::new(addr))
         }
         _ => unimplemented!("{:#?}", operand),
     }
@@ -148,6 +161,19 @@ pub fn lift_add(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
                 left: Rc::new(lift_read_operand(dst, cs)),
                 right: Rc::new(lift_read_operand(src, cs)),
             },
+        }])
+    } else {
+        panic!("invalid amount of operands")
+    }
+}
+
+pub fn lift_lea(operands: &[X86Operand], cs: &Capstone) -> ir::Block {
+    if let [dst, src] = operands {
+        let dst = &dst.op_type;
+        let src = &src.op_type;
+        ir::Block(vec![ir::Stmt::Set {
+            dst: lift_set_dst(dst, cs),
+            val: lift_read_operand(src, cs),
         }])
     } else {
         panic!("invalid amount of operands")
