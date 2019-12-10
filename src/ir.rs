@@ -133,6 +133,7 @@ pub enum BinOpKind {
     Add,
     Sub,
     Xor,
+    And,
 }
 
 impl Display for BinOpKind {
@@ -141,6 +142,7 @@ impl Display for BinOpKind {
             BinOpKind::Add => f.write_str("+"),
             BinOpKind::Sub => f.write_str("-"),
             BinOpKind::Xor => f.write_str("^"),
+            BinOpKind::And => f.write_str("&"),
         }
     }
 }
